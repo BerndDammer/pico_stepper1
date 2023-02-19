@@ -18,9 +18,9 @@
 #define SLICE1 0
 #define SLICE2 7
 
-#define WRAP 3000
+#define WRAP 300
 #define OFF_CHANNEL 0
-#define ON_CHANNEL 3000
+#define ON_CHANNEL 300
 
 typedef struct
 {
@@ -76,24 +76,24 @@ void motor_set_single(int coil_number)
     {
     case 1:
         pwm_set_chan_level(cs_mot1.slice, PWM_CHAN_A, ON_CHANNEL);
-        pwm_set_chan_level(cs_mot1.slice, PWM_CHAN_B, ON_CHANNEL);
+        pwm_set_chan_level(cs_mot1.slice, PWM_CHAN_B, OFF_CHANNEL);
         pwm_set_chan_level(cs_mot2.slice, PWM_CHAN_A, OFF_CHANNEL);
         pwm_set_chan_level(cs_mot2.slice, PWM_CHAN_B, OFF_CHANNEL);
         break;
     case 2:
         pwm_set_chan_level(cs_mot1.slice, PWM_CHAN_A, OFF_CHANNEL);
         pwm_set_chan_level(cs_mot1.slice, PWM_CHAN_B, ON_CHANNEL);
-        pwm_set_chan_level(cs_mot2.slice, PWM_CHAN_A, ON_CHANNEL);
+        pwm_set_chan_level(cs_mot2.slice, PWM_CHAN_A, OFF_CHANNEL);
         pwm_set_chan_level(cs_mot2.slice, PWM_CHAN_B, OFF_CHANNEL);
         break;
     case 3:
         pwm_set_chan_level(cs_mot1.slice, PWM_CHAN_A, OFF_CHANNEL);
         pwm_set_chan_level(cs_mot1.slice, PWM_CHAN_B, OFF_CHANNEL);
         pwm_set_chan_level(cs_mot2.slice, PWM_CHAN_A, ON_CHANNEL);
-        pwm_set_chan_level(cs_mot2.slice, PWM_CHAN_B, ON_CHANNEL);
+        pwm_set_chan_level(cs_mot2.slice, PWM_CHAN_B, OFF_CHANNEL);
         break;
     case 4:
-        pwm_set_chan_level(cs_mot1.slice, PWM_CHAN_A, ON_CHANNEL);
+        pwm_set_chan_level(cs_mot1.slice, PWM_CHAN_A, OFF_CHANNEL);
         pwm_set_chan_level(cs_mot1.slice, PWM_CHAN_B, OFF_CHANNEL);
         pwm_set_chan_level(cs_mot2.slice, PWM_CHAN_A, OFF_CHANNEL);
         pwm_set_chan_level(cs_mot2.slice, PWM_CHAN_B, ON_CHANNEL);

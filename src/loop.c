@@ -22,6 +22,31 @@ void menu(void)
     printf("------------------------------------\n");
 }
 
+void loop_it()
+{
+    int c;
+    int step = 1;
+    printf("Stepping\n");
+    for (;;)
+    {
+        c = getchar_timeout_us(50 * 1000);
+        blinker_toggle();
+
+        if (c != PICO_ERROR_TIMEOUT)
+        {
+            return;
+        }
+        else
+        {
+            step++;
+            if (step > 4)
+                step = 1;
+            motor_set_single(step);
+        }
+    }
+    printf("Stepping stopped\n");
+}
+
 void loop()
 {
     volatile int c; // make visible in debugger; avoid optimize out
@@ -57,6 +82,9 @@ void loop()
                 break;
             case '4':
                 motor_set_single(4);
+                break;
+            case 'l':
+                loop_it();
                 break;
             case ' ':
             case '0':
