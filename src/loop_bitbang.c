@@ -8,7 +8,7 @@
 #include "hardware/watchdog.h"
 #include "hardware/clocks.h"
 
-#define TIMEOUT_MIN 2000
+#define TIMEOUT_MIN 300
 #define TIMEOUT_MAX 500000
 #define DSTEP 1.2
 
@@ -21,6 +21,7 @@ void menu_bitbang(void)
     printf("4 Half Stepping\n");
     printf("+ Increase Frequency\n");
     printf("- Decrease Frequency\n");
+    printf("r Reverse direction\n");
     printf("ESC  exit\n");
     printf("press key to select\n");
     printf("------------------------------------\n");
@@ -109,6 +110,7 @@ void loop_bitbang(void)
     volatile int c; // make visible in debugger; avoid optimize out
     int menu_counter = 0;
     int delay = TIMEOUT_MAX;
+    int forward = true;
     mode = 0;
     step = 0;
 
@@ -131,8 +133,7 @@ void loop_bitbang(void)
                 gpio_put(p, v);
                 //gpio_put(pins[i], outs[mode][step][i]);
             }
-            if (++step > 7)
-                step = 0;
+            step = (forward ? ++step : --step) & 7;
         }
         else
         {
@@ -148,12 +149,17 @@ void loop_bitbang(void)
                 mode = 3;
                 break;
             case '+':
-                delay = (int)((double)delay / DSTEP);
-                if(delay < TIMEOUT_MIN) delay = TIMEOUT_MIN;
+                delay = (int) ((double) delay / DSTEP);
+                if (delay < TIMEOUT_MIN)
+                    delay = TIMEOUT_MIN;
                 break;
             case '-':
-                delay = (int)((double)delay * DSTEP);
-                if(delay > TIMEOUT_MAX) delay = TIMEOUT_MAX;
+                delay = (int) ((double) delay * DSTEP);
+                if (delay > TIMEOUT_MAX)
+                    delay = TIMEOUT_MAX;
+                break;
+            case 'r':
+                forward = !forward;
                 break;
             case ' ':
             case '0':
