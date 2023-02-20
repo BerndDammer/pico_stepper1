@@ -10,10 +10,6 @@
 // Pin 19 Slice 7 Channel A GPIO 14
 // Pin 20 Slice 7 Channel B GPIO 15
 
-#define COIL1 16
-#define COIL2 17
-#define COIL3 14
-#define COIL4 15
 
 #define SLICE1 0
 #define SLICE2 7

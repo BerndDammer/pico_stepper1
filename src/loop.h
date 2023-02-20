@@ -1,1 +1,1 @@
-extern void loop();
+extern void loop(void);

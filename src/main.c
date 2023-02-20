@@ -1,5 +1,5 @@
 #include "timer.h"
-#include "loop.h"
+#include "loop_main.h"
 #include "blinker.h"
 #include "motor.h"
 
@@ -18,9 +18,9 @@ int main()
 
     timer_init();
     blinker_init();
-    motor_init();
+    //motor_init();
 
-    loop();
+    loop_main();
 
     return 0;
 }

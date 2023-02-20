@@ -18,6 +18,7 @@ void menu(void)
     printf("------------------------------------\n");
     printf("1 2 3 4 switch coil on \n");
     printf("0 all coils off\n");
+    printf("ESC exit\n");
     printf("press key to select\n");
     printf("------------------------------------\n");
 }
@@ -52,6 +53,7 @@ void loop()
     volatile int c; // make visible in debugger; avoid optimize out
     int counter = 0;
 
+    motor_init();
     int step_value = STEP_START;
     motor_set(step_value);
 
@@ -64,7 +66,7 @@ void loop()
 
         if (c == PICO_ERROR_TIMEOUT)
         {
-            printf("Loop Counter %i\n", counter);
+            printf("Microstepping Loop Counter %i\n", counter);
             counter++;
         }
         else
@@ -89,6 +91,9 @@ void loop()
             case ' ':
             case '0':
                 motor_set_single(0);
+                break;
+            case 27:
+                return;
                 break;
             default:
                 menu();
