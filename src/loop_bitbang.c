@@ -12,6 +12,10 @@
 #define TIMEOUT_MAX 500000
 #define DSTEP 1.2
 
+#define STEPS_PER_ELECTRIC_WAVE 8
+#define POLE_PAIR_COUNT 8
+#define GEAR 64
+
 void menu_bitbang(void)
 {
     printf("------------------------------------\n");
@@ -133,10 +137,10 @@ void loop_bitbang(void)
                 //gpio_put(pins[i], outs[mode][step][i]);
             }
             step = (forward ? ++step : --step) & 7;
-            if(countdown != 0)
+            if (countdown != 0)
             {
                 countdown--;
-                if(countdown == 0)
+                if (countdown == 0)
                 {
                     mode = 0;
                 }
@@ -169,7 +173,7 @@ void loop_bitbang(void)
                 forward = !forward;
                 break;
             case 'c':
-                countdown = 64 *64;
+                countdown = STEPS_PER_ELECTRIC_WAVE * POLE_PAIR_COUNT * GEAR;
                 break;
             case ' ':
             case '0':
