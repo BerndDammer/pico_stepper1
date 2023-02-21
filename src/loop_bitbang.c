@@ -14,8 +14,8 @@
 
 #define STEPS_PER_ELECTRIC_WAVE 8
 #define POLE_PAIR_COUNT 8
-#define GEAR 64
-
+//#define GEAR 64
+#define GEAR ((32.0/9.0)*(22.0/11.0)*(26.0/9.0)*(31.0/10.0))
 void menu_bitbang(void)
 {
     printf("------------------------------------\n");
@@ -23,6 +23,7 @@ void menu_bitbang(void)
     printf("1 Full stepping\n");
     printf("2 Half Stepping\n");
     printf("4 Half Stepping\n");
+    printf("5 Gap Stepping\n");
     printf("+ Increase Frequency\n");
     printf("- Decrease Frequency\n");
     printf("r Reverse direction\n");
@@ -39,8 +40,14 @@ COIL2,
 COIL3,
 COIL4, };
 
+void show_frequency(int delay)
+{
+    double f = 1e6 / (double) delay / (double) 8;
+    printf("Electric frequency %8.1f HZ\n", f);
+}
+
 // mode step pin
-int outs[4][8][4] =
+int outs[5][8][4] =
 {
 {
 { false, false, false, false },
@@ -77,9 +84,16 @@ int outs[4][8][4] =
 { false, false, true, false },
 { false, false, true, false },
 { false, false, false, true },
-{ false, false, false, true }
-
-} };
+{ false, false, false, true } },
+{
+{ true, false, false, false },
+{ false, false, false, false },
+{ false, true, false, false },
+{ false, false, false, false },
+{ false, false, true, false },
+{ false, false, false, false },
+{ false, false, false, true },
+{ false, false, false, false } } };
 
 void bitbang_init(void)
 {
@@ -159,15 +173,20 @@ void loop_bitbang(void)
             case '4':
                 mode = 3;
                 break;
+            case '5':
+                mode = 4;
+                break;
             case '+':
                 delay = (int) ((double) delay / DSTEP);
                 if (delay < TIMEOUT_MIN)
                     delay = TIMEOUT_MIN;
+                show_frequency(delay);
                 break;
             case '-':
                 delay = (int) ((double) delay * DSTEP);
                 if (delay > TIMEOUT_MAX)
                     delay = TIMEOUT_MAX;
+                show_frequency(delay);
                 break;
             case 'r':
                 forward = !forward;
