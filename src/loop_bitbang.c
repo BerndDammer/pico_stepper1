@@ -22,12 +22,13 @@ void menu_bitbang(void)
     printf("+ Increase Frequency\n");
     printf("- Decrease Frequency\n");
     printf("r Reverse direction\n");
+    printf("c Countdown\n");
     printf("ESC  exit\n");
     printf("press key to select\n");
     printf("------------------------------------\n");
 }
 
-int pins[4] =
+const int pins[4] =
 {
 COIL1,
 COIL2,
@@ -76,9 +77,6 @@ int outs[4][8][4] =
 
 } };
 
-int mode = 0;
-int step = 0;
-
 void bitbang_init(void)
 {
     for (int i = 0; i < 4; i++)
@@ -111,8 +109,9 @@ void loop_bitbang(void)
     int menu_counter = 0;
     int delay = TIMEOUT_MAX;
     int forward = true;
-    mode = 0;
-    step = 0;
+    int countdown = 0;
+    int mode = 0;
+    int step = 0;
 
     menu_bitbang();
     bitbang_init();
@@ -134,6 +133,14 @@ void loop_bitbang(void)
                 //gpio_put(pins[i], outs[mode][step][i]);
             }
             step = (forward ? ++step : --step) & 7;
+            if(countdown != 0)
+            {
+                countdown--;
+                if(countdown == 0)
+                {
+                    mode = 0;
+                }
+            }
         }
         else
         {
@@ -160,6 +167,9 @@ void loop_bitbang(void)
                 break;
             case 'r':
                 forward = !forward;
+                break;
+            case 'c':
+                countdown = 64 *64;
                 break;
             case ' ':
             case '0':
