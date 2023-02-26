@@ -23,7 +23,7 @@ void menu(void)
     printf("------------------------------------\n");
 }
 
-void loop_it()
+void loop_it(void)
 {
     int c;
     int step = 1;
@@ -48,7 +48,7 @@ void loop_it()
     printf("Stepping stopped\n");
 }
 
-void loop()
+void loop(void)
 {
     volatile int c; // make visible in debugger; avoid optimize out
     int counter = 0;
@@ -93,6 +93,7 @@ void loop()
                 motor_set_single(0);
                 break;
             case 27:
+                motor_deinit();
                 return;
                 break;
             default:
