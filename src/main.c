@@ -19,8 +19,7 @@ int main()
     timer_init();
     blinker_init();
 
-    //loop_main();
-    loop();
+    loop_main();
 
     return 0;
 }

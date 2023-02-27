@@ -9,55 +9,59 @@
 #include "hardware/clocks.h"
 
 #define CONSOLE_TIMEOUT 1000000
-#define STEP_MAX 3000
-#define STEP_STEP 300
-#define STEP_START 300
+//#define STEP_MAX 3000
+//#define STEP_STEP 300
+//#define STEP_START 300
+#define DSTEP 1.2
 
 void menu(void)
 {
     printf("------------------------------------\n");
-    printf("1 2 3 4 switch coil on \n");
-    printf("0 all coils off\n");
-    printf("ESC exit\n");
+    printf("Microstepping\n");
+    printf("f Increase Frequency\n");
+    printf("s Decrease Frequency\n");
+    printf("r Reverse direction\n");
+    printf("ESC  exit\n");
     printf("press key to select\n");
     printf("------------------------------------\n");
 }
 
-void loop_it(void)
-{
-    int c;
-    int step = 1;
-    printf("Stepping\n");
-    for (;;)
-    {
-        c = getchar_timeout_us(50 * 1000);
-        blinker_toggle();
+/*
+ void loop_it(void)
+ {
+ int c;
+ int step = 1;
+ printf("Stepping\n");
+ for (;;)
+ {
+ c = getchar_timeout_us(50 * 1000);
+ blinker_toggle();
 
-        if (c != PICO_ERROR_TIMEOUT)
-        {
-            return;
-        }
-        else
-        {
-            step++;
-            if (step > 4)
-                step = 1;
-            motor_set_single(step);
-        }
-    }
-    printf("Stepping stopped\n");
-}
+ if (c != PICO_ERROR_TIMEOUT)
+ {
+ return;
+ }
+ else
+ {
+ step++;
+ if (step > 4)
+ step = 1;
+ motor_set_single(step);
+ }
+ }
+ printf("Stepping stopped\n");
+ }
+ */
 
 void loop(void)
 {
     volatile int c; // make visible in debugger; avoid optimize out
     int counter = 0;
+    double f = 1.0;
 
     motor_init();
-    int step_value = STEP_START;
-    motor_set(step_value);
-
     menu();
+    motor_set_frequency(f);
 
     for (;;)
     {
@@ -73,24 +77,20 @@ void loop(void)
         {
             switch (c)
             {
-            case '1':
-                motor_set_single(1);
+            case 'f':
+                f *= DSTEP;
+                motor_set_frequency(f);
+                printf("New frequency %f\n", f);
                 break;
-            case '2':
-                motor_set_single(2);
+            case 's':
+                f /= DSTEP;
+                motor_set_frequency(f);
+                printf("New frequency %f\n", f);
                 break;
-            case '3':
-                motor_set_single(3);
-                break;
-            case '4':
-                motor_set_single(4);
-                break;
-            case 'l':
-                loop_it();
-                break;
-            case ' ':
-            case '0':
-                motor_set_single(0);
+            case 'r':
+                f = -f;
+                motor_set_frequency(f);
+                printf("New frequency %f\n", f);
                 break;
             case 27:
                 motor_deinit();

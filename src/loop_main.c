@@ -1,6 +1,7 @@
 #include "loop_main.h"
 #include "loop.h"
 #include "loop_bitbang.h"
+#include "loop_single.h"
 #include "blinker.h"
 
 #include <stdio.h>
@@ -16,6 +17,7 @@ void menu_main(void)
     printf("------------------------------------\n");
     printf("b bitbang\n");
     printf("m microstepping\n");
+    printf("s single\n");
     printf("press key to select\n");
     printf("------------------------------------\n");
 }
@@ -47,6 +49,9 @@ void loop_main(void)
                 break;
             case 'm':
                 loop();
+                break;
+            case 's':
+                loop_single();
                 break;
             default:
                 menu_main();

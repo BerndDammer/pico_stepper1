@@ -38,21 +38,21 @@ typedef struct
 
 } s_cs_mot;
 
-s_cs_mot cs_mot1 =
+static s_cs_mot cs_mot1 =
 { SLICE1, COIL1, COIL2,
 {
 
 } };
 
-s_cs_mot cs_mot2 =
+static s_cs_mot cs_mot2 =
 { SLICE2, COIL3, COIL4,
 {
 
 } };
 
 volatile int irq_counter = 0;
-volatile unsigned int phase_angle = 0;
-volatile unsigned int phase_omega = 70000;
+volatile int phase_angle = 0;
+volatile int phase_omega = 100;
 
 void on_pwm_wrap(void)
 {
@@ -64,8 +64,23 @@ void on_pwm_wrap(void)
     phase_angle += phase_omega;
 
     // intentionally use of byte wrap around
-    unsigned char alpha = phase_angle >> 16;
+    volatile unsigned char alpha = phase_angle >> 16;
 
+    volatile unsigned short a,b,c,d;
+    a = phasetable[alpha];
+    alpha += 64;
+    b = phasetable[alpha];
+    alpha += 64;
+    c = phasetable[alpha];
+    alpha += 64;
+    d = phasetable[alpha];
+    alpha += 64;
+
+    pwm_set_chan_level(cs_mot1.slice, PWM_CHAN_A, a);
+    pwm_set_chan_level(cs_mot1.slice, PWM_CHAN_B, b);
+    pwm_set_chan_level(cs_mot2.slice, PWM_CHAN_A, c);
+    pwm_set_chan_level(cs_mot2.slice, PWM_CHAN_B, d);
+    /*
     pwm_set_chan_level(cs_mot1.slice, PWM_CHAN_A, phasetable[alpha]);
     alpha += 64;
     pwm_set_chan_level(cs_mot1.slice, PWM_CHAN_B, phasetable[alpha]);
@@ -73,7 +88,7 @@ void on_pwm_wrap(void)
     pwm_set_chan_level(cs_mot2.slice, PWM_CHAN_A, phasetable[alpha]);
     alpha += 64;
     pwm_set_chan_level(cs_mot2.slice, PWM_CHAN_B, phasetable[alpha]);
-
+    */
     gpio_put(FLAG, false);
 }
 
@@ -135,16 +150,35 @@ void motor_init2(s_cs_mot *s)
     pwm_set_enabled(s->slice, true);
 }
 
-void motor_init()
+void motor_init(void)
 {
     motor_init2(&cs_mot1);
     motor_init2(&cs_mot2);
     motor_irq_init();
 }
+
+void motor_set_frequency(double f)
+{
+    f = f * 16777216.0 / (double)FPWM;
+    phase_omega = (int)f;
+}
+
 void motor_deinit(void)
 {
+    irq_set_enabled(PWM_IRQ_WRAP, false);
+    pwm_set_irq_enabled(cs_mot1.slice, false);
+    irq_remove_handler(PWM_IRQ_WRAP, on_pwm_wrap);
 
+    pwm_set_enabled(cs_mot1.slice, false);
+    pwm_set_enabled(cs_mot2.slice, false);
+
+    gpio_init(FLAG);
+    gpio_init(cs_mot1.moth);
+    gpio_init(cs_mot1.motl);
+    gpio_init(cs_mot2.moth);
+    gpio_init(cs_mot2.motl);
 }
+
 void motor_set_single(int coil_number)
 {
     switch (coil_number)

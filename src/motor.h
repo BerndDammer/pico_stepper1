@@ -5,6 +5,8 @@
 
 void motor_init(void);
 void motor_deinit(void);
+void motor_set_frequency(double f);
+
 void motor_set(int pwm_val);
 void motor_set_single(int coil_number);
 
